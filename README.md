@@ -1,0 +1,2 @@
+# MoMo SDK API GetPaid
+
