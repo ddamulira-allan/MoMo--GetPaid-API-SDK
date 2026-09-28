@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f5f0">
+    <meta name="description" content="Thoughtful everyday goods from Moyo Market. Shop and check out with MTN Mobile Money.">
+    <title>Moyo Market — good things, thoughtfully chosen</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <div class="announcement">A little good goes a long way <span>·</span> Free delivery over UGX 200,000</div>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="Moyo Market home"><span class="wordmark-mark">m</span> moyo<span class="wordmark-light">market</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#shop">Shop</a>
+        <a href="#story">Our story</a>
+      </nav>
+      <a class="bag-link" href="#cart" aria-label="View shopping bag">Bag <span id="bag-count" class="bag-count">0</span></a>
+    </header>
+
+    <main>
+      <section class="hero" id="story">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Made for the everyday</p>
+          <h1>Good things,<br>chosen with <em>care.</em></h1>
+          <p class="hero-description">Useful, beautiful things for living a little more lightly. Thoughtfully picked, made to be kept.</p>
+          <a class="text-link" href="#shop">Find your everyday <span aria-hidden="true">↘</span></a>
+          <div class="hero-note"><span class="note-star">✳</span><span>Small details.<br>A better kind of everyday.</span></div>
+        </div>
+        <div class="hero-art" aria-label="A curated selection of everyday goods">
+          <div class="hero-sun"></div>
+          <div class="hero-plant plant-one"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="hero-still-life">
+            <div class="hero-bag"><div class="bag-handle"></div><span>m</span></div>
+            <div class="hero-bottle"><div class="bottle-cap"></div><div class="bottle-glint"></div></div>
+            <div class="hero-book"><div class="book-label">take<br>it slow</div></div>
+          </div>
+          <span class="hero-art-caption">THE LITTLE THINGS, DONE WELL</span>
+        </div>
+      </section>
+
+      <section class="shop-section" id="shop">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">The good stuff</p>
+            <h2>Meet your new favourites<span class="heading-period">.</span></h2>
+          </div>
+          <p class="section-aside">A few things we think you’ll love.</p>
+        </div>
+        <div id="product-grid" class="product-grid" aria-live="polite">
+          <p class="loading-message">Gathering the good things…</p>
+        </div>
+      </section>
+
+      <section class="values-strip" aria-label="Our values">
+        <div><span class="value-icon">✳</span><span><strong>Thoughtfully chosen</strong><small>Things worth keeping</small></span></div>
+        <div><span class="value-icon">↗</span><span><strong>Easy, secure checkout</strong><small>Pay safely with MTN MoMo</small></span></div>
+        <div><span class="value-icon">♡</span><span><strong>A little more human</strong><small>Good goods, good people</small></span></div>
+      </section>
+
+      <section class="checkout-layout" id="cart">
+        <div class="checkout-intro">
+          <p class="eyebrow">Your corner of the market</p>
+          <h2>Your bag<span class="heading-period">.</span></h2>
+          <p>Take a look at what you’ve picked. When you’re ready, we’ll send a payment prompt to your phone.</p>
+          <div class="secure-note"><span aria-hidden="true">⌑</span> Your payment is securely processed by MTN Mobile Money.</div>
+        </div>
+
+        <div class="checkout-card">
+          <div id="cart-view">
+            <div class="card-title-row"><h3>Order summary</h3><span id="summary-count">0 items</span></div>
+            <div id="cart-items" class="cart-items">
+              <p class="empty-cart">Your bag is waiting for something lovely.</p>
+            </div>
+            <div class="totals">
+              <div><span>Subtotal</span><strong id="subtotal">UGX 0</strong></div>
+              <div><span>Delivery</span><strong id="delivery-fee">Calculated at checkout</strong></div>
+              <div class="total-row"><span>Total</span><strong id="total">UGX 0</strong></div>
+            </div>
+            <p class="delivery-hint" id="delivery-hint">Free delivery on orders over UGX 200,000.</p>
+            <button id="checkout-button" class="button button-dark button-full" type="button" disabled>Continue to checkout <span aria-hidden="true">→</span></button>
+            <p class="payment-footnote">Secure payment by MTN MoMo</p>
+          </div>
+
+          <form id="checkout-form" class="checkout-form" hidden>
+            <div class="card-title-row checkout-title">
+              <button id="back-to-cart" class="back-button" type="button" aria-label="Back to your bag">←</button>
+              <h3>Delivery &amp; payment</h3>
+              <span id="checkout-total" class="checkout-total"></span>
+            </div>
+            <p class="form-intro">Where should we bring your good things?</p>
+            <label>Full name<input name="name" autocomplete="name" required maxlength="100" placeholder="Your name"></label>
+            <div class="field-pair">
+              <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></label>
+              <label>Mobile money number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+256 7XX XXX XXX" minlength="8" maxlength="20"><small>Include your country code.</small></label>
+            </div>
+            <label>Delivery address<input name="address" autocomplete="street-address" required maxlength="200" placeholder="Street, building, or landmark"></label>
+            <label>Town or city<input name="city" autocomplete="address-level2" required maxlength="80" placeholder="Kampala"></label>
+            <div class="payment-method"><span class="momo-symbol">m</span><span><strong>MTN Mobile Money</strong><small>A payment prompt will arrive on your phone.</small></span><span class="selected-check" aria-label="Selected">✓</span></div>
+            <p id="checkout-error" class="checkout-error" role="alert" hidden></p>
+            <button id="pay-button" class="button button-dark button-full" type="submit">Place order &amp; pay <span aria-hidden="true">→</span></button>
+            <p class="payment-footnote">By placing your order, you agree to our store terms.</p>
+          </form>
+
+          <section id="payment-view" class="payment-view" aria-live="polite" hidden>
+            <div class="payment-pulse"><span class="momo-symbol">m</span></div>
+            <p class="eyebrow">One last little step</p>
+            <h3 id="payment-heading">Check your phone</h3>
+            <p id="payment-message">Approve the MTN Mobile Money prompt to complete your order.</p>
+            <div class="payment-order"><span id="payment-order-id"></span><strong id="payment-amount"></strong></div>
+            <p id="payment-error" class="checkout-error" role="alert" hidden></p>
+            <button id="check-payment" class="button button-outline button-full" type="button">Check payment status</button>
+            <button id="cancel-waiting" class="text-button" type="button" hidden>Continue shopping</button>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="wordmark footer-wordmark" href="/"><span class="wordmark-mark">m</span> moyo<span class="wordmark-light">market</span></a>
+      <p>A little good goes a long way.</p>
+      <span>Secure checkout with MTN MoMo</span>
+    </footer>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

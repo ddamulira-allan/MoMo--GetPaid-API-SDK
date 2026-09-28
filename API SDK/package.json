@@ -1,0 +1,69 @@
+{
+  "name": "momo-get-paid-sdk",
+  "version": "1.0.1",
+  "description": "TypeScript SDK for the MTN MoMo Get Paid API (Collection & Disbursement)",
+  "type": "module",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "clean": "node -e \"const fs=require('fs');fs.rmSync('dist',{recursive:true,force:true});\"",
+    "build:esm": "tsc -p tsconfig.build.json --outDir dist/esm",
+    "build:cjs": "tsc -p tsconfig.build.json --outDir dist/cjs --module CommonJS --moduleResolution Node10 && node scripts/rename-cjs.mjs",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "typecheck": "tsc --noEmit",
+    "start:shop": "node ecommerce/server.mjs",
+    "prepublishOnly": "npm run typecheck && npm run build"
+  },
+  "keywords": [
+    "momo",
+    "mtn",
+    "mobile-money",
+    "payments",
+    "sdk",
+    "typescript",
+    "africa",
+    "fintech"
+  ],
+  "author": {
+    "name": "Ddamulira Allan"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ddamulira-allan/MoMo--GetPaid-API-SDK.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ddamulira-allan/MoMo--GetPaid-API-SDK/issues"
+  },
+  "homepage": "https://github.com/ddamulira-allan/MoMo--GetPaid-API-SDK#readme",
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

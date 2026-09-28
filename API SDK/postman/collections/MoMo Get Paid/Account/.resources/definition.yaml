@@ -1,0 +1,4 @@
+$kind: collection
+name: Account
+description: Endpoints for checking MoMo account status and retrieving account holder information.
+order: 2000

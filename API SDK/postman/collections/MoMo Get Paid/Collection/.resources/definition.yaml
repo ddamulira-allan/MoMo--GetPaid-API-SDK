@@ -1,0 +1,6 @@
+$kind: collection
+name: Collection
+description: |-
+  Endpoints for the MoMo Collection product — initiating payments, checking
+  transaction status, and sending delivery notifications.
+order: 3000

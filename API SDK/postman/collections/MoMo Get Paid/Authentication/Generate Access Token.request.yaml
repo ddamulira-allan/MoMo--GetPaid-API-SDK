@@ -1,0 +1,49 @@
+$kind: http-request
+order: 1000
+method: POST
+url: '{{baseUrl}}/collection/token/'
+description: |-
+  Generate a Bearer access token using HTTP Basic Auth (apiUser:apiKey).
+  Tokens are valid for the duration returned in `expires_in` (seconds).
+
+  The SDK caches the token and auto-refreshes it 60 seconds before expiry.
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: '{{apiUser}}'
+    - key: password
+      value: '{{apiKey}}'
+headers:
+  - key: Ocp-Apim-Subscription-Key
+    value: '{{subscriptionKey}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Status code ──────────────────────────────────────────────────────────
+      pm.test('Status is 200 OK', () => {
+          pm.response.to.have.status(200);
+      });
+
+      // ── Response time ─────────────────────────────────────────────────────────
+      pm.test('Response time is under 5000ms', () => {
+          pm.expect(pm.response.responseTime).to.be.below(5000);
+      });
+
+      // ── Schema validation ─────────────────────────────────────────────────────
+      pm.test('Response has required token fields', () => {
+          const json = pm.response.json();
+          pm.expect(json).to.be.an('object');
+          pm.expect(json).to.have.property('access_token').that.is.a('string').and.not.empty;
+          pm.expect(json).to.have.property('token_type').that.is.a('string');
+          pm.expect(json).to.have.property('expires_in').that.is.a('number').and.above(0);
+      });
+
+      // ── Variable chaining ─────────────────────────────────────────────────────
+      pm.test('Access token saved to collection variable', () => {
+          const json = pm.response.json();
+          pm.expect(json.access_token).to.be.a('string').and.not.empty;
+          pm.collectionVariables.set('accessToken', json.access_token);
+          console.log('✅ accessToken saved:', json.access_token.substring(0, 20) + '...');
+      });

@@ -1,0 +1,6 @@
+$kind: collection
+name: Disbursement
+description: |-
+  Endpoints for the MoMo Disbursement product — initiating refunds and
+  checking refund transaction status.
+order: 4000

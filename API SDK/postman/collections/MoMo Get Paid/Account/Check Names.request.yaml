@@ -1,0 +1,55 @@
+$kind: http-request
+order: 2000
+method: GET
+url: '{{baseUrl}}/disbursement/v1_0/accountholder/msisdn/{{msisdn}}/basicuserinfo'
+description: |-
+  Retrieve basic user info (name, gender, locale, etc.) for an MSISDN.
+
+  Returns: `sub`, `name`, `given_name`, `family_name`, `birthdate`, `locale`, `gender`, `updated_at`.
+headers:
+  - key: Authorization
+    value: 'Bearer {{accessToken}}'
+  - key: X-Target-Environment
+    value: '{{targetEnvironment}}'
+  - key: Ocp-Apim-Subscription-Key
+    value: '{{disbursementSubscriptionKey}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Status code ──────────────────────────────────────────────────────────
+      pm.test('Status is 200 OK', () => {
+          pm.response.to.have.status(200);
+      });
+
+      // ── Response time ─────────────────────────────────────────────────────────
+      pm.test('Response time is under 5000ms', () => {
+          pm.expect(pm.response.responseTime).to.be.below(5000);
+      });
+
+      // ── Schema validation ─────────────────────────────────────────────────────
+      pm.test('Response has required user info fields', () => {
+          const json = pm.response.json();
+          pm.expect(json).to.be.an('object');
+          pm.expect(json).to.have.property('sub').that.is.a('string');
+          pm.expect(json).to.have.property('name').that.is.a('string').and.not.empty;
+          pm.expect(json).to.have.property('given_name').that.is.a('string');
+          pm.expect(json).to.have.property('family_name').that.is.a('string');
+          pm.expect(json).to.have.property('locale').that.is.a('string');
+          pm.expect(json).to.have.property('gender').that.is.a('string');
+      });
+
+      // ── Business logic ────────────────────────────────────────────────────────
+      pm.test('Gender is a valid value', () => {
+          const json = pm.response.json();
+          pm.expect(['MALE', 'FEMALE', 'UNKNOWN']).to.include(json.gender);
+      });
+
+      // ── Variable chaining ─────────────────────────────────────────────────────
+      pm.test('Payer name saved to collection variable', () => {
+          const json = pm.response.json();
+          if (json.name) {
+              pm.collectionVariables.set('payerName', json.name);
+              console.log('✅ payerName saved:', json.name);
+          }
+      });

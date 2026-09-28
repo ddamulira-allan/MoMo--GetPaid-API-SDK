@@ -1,0 +1,25 @@
+$kind: collection
+name: MoMo Get Paid
+description: |-
+  Production-ready collection for the MTN MoMo Get Paid API, based on MoMoGetPaidSDK.js.
+
+  ## Endpoints
+  | # | Name | Method | Path |
+  |---|------|--------|------|
+  | 1 | Generate Access Token | POST | /collection/token/ |
+  | 2 | Check Account | GET | /disbursement/v1_0/accountholder/msisdn/{msisdn}/active |
+  | 3 | Check Names | GET | /disbursement/v1_0/accountholder/msisdn/{msisdn}/basicuserinfo |
+  | 4 | Request to Pay | POST | /collection/v1_0/requesttopay |
+  | 5 | Get Request to Pay Status | GET | /collection/v1_0/requesttopay/{requestId} |
+  | 6 | Send Delivery Notification | POST | /collection/v1_0/requesttopay/{requestId}/deliverynotification |
+  | 7 | Refund | POST | /disbursement/v1_0/refund |
+  | 8 | Get Refund Status | GET | /disbursement/v1_0/refund/{requestIdRefund} |
+
+  ## Setup
+  Use the **MoMo Get Paid** environment and fill in:
+  - `baseUrl` – 'https://sandbox.momodeveloper.mtn.com'
+  - `apiUser` – '4e42bb3d-7a00-43b4-b436-aae52b32f83c'
+  - `apiKey` – 'f5cc954ccce142eca761656022de1b8a'
+  - `subscriptionKey` – '2770a5aadeb34ce6815f7c3e1fcfd51c'
+  - `disbursementSubscriptionKey` – '19442b996b3f4727aea5e1cd1ed9464f'
+  - `targetEnvironment` – 'sandbox'

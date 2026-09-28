@@ -1,0 +1,74 @@
+$kind: http-request
+order: 1000
+method: POST
+url: '{{baseUrl}}/disbursement/v1_0/refund'
+description: |-
+  Initiate a refund for a previously completed collection transaction.
+
+  Returns **202 Accepted** on success (no response body).
+  Use the `X-Reference-Id` sent in the header as the `requestIdRefund` to poll
+  **Get Refund Status** for the final outcome.
+
+  Set `referenceIdToRefund` to the original `requestId` from the **Request to Pay** call.
+headers:
+  - key: Authorization
+    value: 'Bearer {{accessToken}}'
+  - key: X-Reference-Id
+    value: '{{requestIdRefund}}'
+  - key: X-Target-Environment
+    value: '{{targetEnvironment}}'
+  - key: Ocp-Apim-Subscription-Key
+    value: '{{disbursementSubscriptionKey}}'
+  - key: Content-Type
+    value: application/json
+  - key: X-Callback-Url
+    value: '{{callbackUrl}}'
+    disabled: true
+body:
+  type: json
+  content: |-
+    {
+      "amount": "100",
+      "currency": "EUR",
+      "externalId": "refund-ref-001",
+      "payerMessage": "Refund for order #001",
+      "payeeNote": "Order #001 refund processed",
+      "referenceIdToRefund": "{{requestId}}"
+    }
+scripts:
+  - type: beforeRequest
+    language: text/javascript
+    code: |-
+      // Guard: ensure a completed requestId exists to refund
+      const requestId = pm.collectionVariables.get('requestId');
+      if (!requestId) {
+          throw new Error('❌ requestId is not set. Run "Request to Pay" first to get a transaction to refund.');
+      }
+      // Always generate a fresh UUID for the refund reference
+      const { v4: uuidv4 } = require('uuid');
+      const refId = uuidv4();
+      pm.collectionVariables.set('requestIdRefund', refId);
+      pm.request.headers.upsert({ key: 'X-Reference-Id', value: refId });
+      console.log('✅ requestIdRefund set:', refId, '| refunding requestId:', requestId);
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Status code ──────────────────────────────────────────────────────────
+      pm.test('Status is 202 Accepted', () => {
+          pm.response.to.have.status(202);
+      });
+
+      // ── Response time ─────────────────────────────────────────────────────────
+      pm.test('Response time is under 5000ms', () => {
+          pm.expect(pm.response.responseTime).to.be.below(5000);
+      });
+
+      // ── Variable chaining ─────────────────────────────────────────────────────
+      pm.test('requestIdRefund is saved for refund status polling', () => {
+          const requestIdRefund = pm.collectionVariables.get('requestIdRefund');
+          pm.expect(requestIdRefund).to.be.a('string').and.match(
+              /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+              'requestIdRefund must be a valid UUID'
+          );
+          console.log('✅ requestIdRefund ready for polling:', requestIdRefund);
+      });

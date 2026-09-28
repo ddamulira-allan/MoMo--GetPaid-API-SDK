@@ -1,0 +1,71 @@
+$kind: http-request
+order: 2000
+method: GET
+url: '{{baseUrl}}/collection/v1_0/requesttopay/{{requestId}}'
+description: |-
+  Get the status of a previously initiated Request-to-Pay transaction.
+
+  Use the `requestId` (UUID) returned by the **Request to Pay** call.
+  The response includes: `status`, `amount`, `currency`, `payer`, and more.
+
+  Possible status values: `PENDING`, `SUCCESSFUL`, `FAILED`.
+headers:
+  - key: Authorization
+    value: 'Bearer {{accessToken}}'
+  - key: X-Target-Environment
+    value: '{{targetEnvironment}}'
+  - key: Ocp-Apim-Subscription-Key
+    value: '{{subscriptionKey}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Status code ──────────────────────────────────────────────────────────
+      pm.test('Status is 200 OK', () => {
+          pm.response.to.have.status(200);
+      });
+
+      // ── Response time ─────────────────────────────────────────────────────────
+      pm.test('Response time is under 5000ms', () => {
+          pm.expect(pm.response.responseTime).to.be.below(5000);
+      });
+
+      // ── Schema validation ─────────────────────────────────────────────────────
+      pm.test('Response has required payment status fields', () => {
+          const json = pm.response.json();
+          pm.expect(json).to.be.an('object');
+          pm.expect(json).to.have.property('status').that.is.a('string');
+          pm.expect(json).to.have.property('amount').that.is.a('string');
+          pm.expect(json).to.have.property('currency').that.is.a('string');
+          pm.expect(json).to.have.property('externalId').that.is.a('string');
+          pm.expect(json).to.have.property('payer').that.is.an('object');
+          pm.expect(json.payer).to.have.property('partyIdType').that.is.a('string');
+          pm.expect(json.payer).to.have.property('partyId').that.is.a('string');
+      });
+
+      // ── Business logic ────────────────────────────────────────────────────────
+      pm.test('Transaction status is a valid value', () => {
+          const json = pm.response.json();
+          pm.expect(['PENDING', 'SUCCESSFUL', 'FAILED']).to.include(json.status);
+      });
+
+      pm.test('Amount matches requested amount', () => {
+          const json = pm.response.json();
+          pm.expect(json.amount).to.equal('100');
+      });
+
+      pm.test('Currency matches requested currency', () => {
+          const json = pm.response.json();
+          pm.expect(json.currency).to.equal('EUR');
+      });
+
+      // ── Variable chaining ─────────────────────────────────────────────────────
+      pm.test('financialTransactionId saved when transaction is successful', () => {
+          const json = pm.response.json();
+          if (json.status === 'SUCCESSFUL' && json.financialTransactionId) {
+              pm.collectionVariables.set('financialTransactionId', json.financialTransactionId);
+              console.log('✅ financialTransactionId saved:', json.financialTransactionId);
+          } else {
+              console.log('ℹ️ Transaction status:', json.status, '— financialTransactionId not yet available');
+          }
+      });

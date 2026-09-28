@@ -1,0 +1,4 @@
+{
+    "npm.exclude": "",
+    "chat.permissions.default": "autoApprove"
+}

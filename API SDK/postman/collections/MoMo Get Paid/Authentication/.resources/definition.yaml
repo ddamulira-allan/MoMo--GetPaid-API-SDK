@@ -1,0 +1,4 @@
+$kind: collection
+name: Authentication
+description: Endpoints for obtaining and managing MoMo API access tokens.
+order: 1000

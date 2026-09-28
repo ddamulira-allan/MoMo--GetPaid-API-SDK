@@ -1,0 +1,38 @@
+# ── Source & dev files ────────────────────────────────────────────────────────
+src/
+scripts/
+*.ts
+!*.d.ts
+
+# ── TypeScript config ─────────────────────────────────────────────────────────
+tsconfig.json
+tsconfig.build.json
+
+# ── Postman workspace (not needed by consumers) ───────────────────────────────
+postman/
+.postman/
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
+**/*.test.ts
+**/*.spec.ts
+**/*.test.js
+**/*.spec.js
+__tests__/
+coverage/
+
+# ── CI / GitHub ───────────────────────────────────────────────────────────────
+.github/
+.husky/
+
+# ── Editor & OS ───────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# ── Misc dev artifacts ────────────────────────────────────────────────────────
+.env
+.env.*
+*.local
+node_modules/

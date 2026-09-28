@@ -1,0 +1,41 @@
+$kind: http-request
+order: 1000
+method: GET
+url: '{{baseUrl}}/disbursement/v1_0/accountholder/msisdn/{{msisdn}}/active'
+description: |-
+  Check whether a mobile money account (MSISDN) is active.
+
+  Returns `{ "result": true }` if the account is active, `{ "result": false }` otherwise.
+headers:
+  - key: Authorization
+    value: 'Bearer {{accessToken}}'
+  - key: X-Target-Environment
+    value: '{{targetEnvironment}}'
+  - key: Ocp-Apim-Subscription-Key
+    value: '{{disbursementSubscriptionKey}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Status code ──────────────────────────────────────────────────────────
+      pm.test('Status is 200 OK', () => {
+          pm.response.to.have.status(200);
+      });
+
+      // ── Response time ─────────────────────────────────────────────────────────
+      pm.test('Response time is under 5000ms', () => {
+          pm.expect(pm.response.responseTime).to.be.below(5000);
+      });
+
+      // ── Schema validation ─────────────────────────────────────────────────────
+      pm.test('Response has "result" boolean field', () => {
+          const json = pm.response.json();
+          pm.expect(json).to.be.an('object');
+          pm.expect(json).to.have.property('result').that.is.a('boolean');
+      });
+
+      // ── Business logic ────────────────────────────────────────────────────────
+      pm.test('Account is active', () => {
+          const json = pm.response.json();
+          pm.expect(json.result).to.be.true;
+      });

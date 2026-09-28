@@ -1,0 +1,73 @@
+$kind: http-request
+order: 1000
+method: POST
+url: '{{baseUrl}}/collection/v1_0/requesttopay'
+description: |-
+  Initiate a Request-to-Pay transaction.
+
+  Returns **202 Accepted** on success (no response body).
+  Use the `X-Reference-Id` sent in the header as the `requestId` to poll
+  **Get Request to Pay Status** for the final outcome.
+
+  The `X-Reference-Id` is auto-populated from the `{{requestId}}` variable.
+  Set it to a new UUID before each call, or let the pre-request script generate one.
+headers:
+  - key: Authorization
+    value: 'Bearer {{accessToken}}'
+  - key: X-Reference-Id
+    value: '{{requestId}}'
+  - key: X-Target-Environment
+    value: '{{targetEnvironment}}'
+  - key: Ocp-Apim-Subscription-Key
+    value: '{{subscriptionKey}}'
+  - key: Content-Type
+    value: application/json
+  - key: X-Callback-Url
+    value: '{{callbackUrl}}'
+    disabled: true
+body:
+  type: json
+  content: |-
+    {
+      "amount": "100",
+      "currency": "EUR",
+      "externalId": "ext-ref-001",
+      "payer": {
+        "partyIdType": "MSISDN",
+        "partyId": "{{msisdn}}"
+      },
+      "payerMessage": "Payment for order #001",
+      "payeeNote": "Order #001 payment received"
+    }
+scripts:
+  - type: beforeRequest
+    language: text/javascript
+    code: |-
+      // Always generate a fresh UUID for each Request to Pay
+      const { v4: uuidv4 } = require('uuid');
+      const refId = uuidv4();
+      pm.collectionVariables.set('requestId', refId);
+      pm.request.headers.upsert({ key: 'X-Reference-Id', value: refId });
+      console.log('✅ requestId set:', refId);
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Status code ──────────────────────────────────────────────────────────
+      pm.test('Status is 202 Accepted', () => {
+          pm.response.to.have.status(202);
+      });
+
+      // ── Response time ─────────────────────────────────────────────────────────
+      pm.test('Response time is under 5000ms', () => {
+          pm.expect(pm.response.responseTime).to.be.below(5000);
+      });
+
+      // ── Variable chaining ─────────────────────────────────────────────────────
+      pm.test('requestId is saved for status polling', () => {
+          const requestId = pm.collectionVariables.get('requestId');
+          pm.expect(requestId).to.be.a('string').and.match(
+              /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+              'requestId must be a valid UUID'
+          );
+          console.log('✅ requestId ready for polling:', requestId);
+      });

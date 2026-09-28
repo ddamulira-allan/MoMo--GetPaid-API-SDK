@@ -1,0 +1,47 @@
+$kind: http-request
+order: 3000
+method: POST
+url: '{{baseUrl}}/collection/v1_0/requesttopay/{{requestId}}/deliverynotification'
+description: |-
+  Send a delivery notification for a completed Request-to-Pay transaction.
+
+  The `notificationMessage` must be 160 characters or fewer.
+  Use the same `requestId` from the original **Request to Pay** call.
+headers:
+  - key: Authorization
+    value: 'Bearer {{accessToken}}'
+  - key: X-Target-Environment
+    value: '{{targetEnvironment}}'
+  - key: Ocp-Apim-Subscription-Key
+    value: '{{subscriptionKey}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "notificationMessage": "Your payment of 100 EUR has been received. Thank you!"
+    }
+scripts:
+  - type: beforeRequest
+    language: text/javascript
+    code: |-
+      // Guard: ensure requestId is set before sending
+      const requestId = pm.collectionVariables.get('requestId');
+      if (!requestId) {
+          throw new Error('❌ requestId is not set. Run "Request to Pay" first.');
+      }
+      console.log('ℹ️ Sending delivery notification for requestId:', requestId);
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Status code ──────────────────────────────────────────────────────────
+      // MoMo returns 200 on success for delivery notifications
+      pm.test('Status is 200 OK', () => {
+          pm.response.to.have.status(200);
+      });
+
+      // ── Response time ─────────────────────────────────────────────────────────
+      pm.test('Response time is under 5000ms', () => {
+          pm.expect(pm.response.responseTime).to.be.below(5000);
+      });
