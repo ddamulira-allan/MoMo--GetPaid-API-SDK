@@ -1,4 +1,4 @@
-# MoMo API GetPaid SDK
+# MoMo-GetPaid-API-SDK
 
 This repository contains the MTN MoMo Get Paid SDK and supporting examples for integrating MoMo Collection and Disbursement flows in Node.js and TypeScript projects.
 
